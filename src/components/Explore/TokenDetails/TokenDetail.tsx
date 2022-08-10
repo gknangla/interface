@@ -11,7 +11,7 @@ import { gql } from 'graphql-request'
 import { useCurrency, useIsUserAddedToken, useToken } from 'hooks/Tokens'
 import { useAtomValue } from 'jotai/utils'
 import { darken } from 'polished'
-import { useCallback } from 'react'
+import { ReactElement, useCallback } from 'react'
 import { useState } from 'react'
 import { ArrowLeft, Copy, Heart, TrendingUp } from 'react-feather'
 import { useLazyLoadQuery } from 'react-relay'
@@ -220,7 +220,47 @@ const tokenDetailsStatsQuery = gql`
   }
 `
 
-export default function LoadedTokenDetail({ address }: { address: string }) {
+export default function TokenDetail({
+  breadcrumb,
+  tokenInfo,
+  chartInfo,
+  aboutHeader,
+  aboutInfo,
+  resources,
+  stats,
+  contract,
+  tokenSafety,
+}: {
+  breadcrumb: ReactElement | null
+  tokenInfo: ReactElement
+  chartInfo: ReactElement
+  aboutHeader: ReactElement
+  aboutInfo: ReactElement
+  resources: ReactElement | null
+  stats: ReactElement
+  contract: ReactElement | null
+  tokenSafety: ReactElement | null
+}) {
+  return (
+    <TopArea>
+      <BreadcrumbNavLink to="/explore">{breadcrumb}</BreadcrumbNavLink>
+      <ChartHeader>
+        <TokenInfoContainer>{tokenInfo}</TokenInfoContainer>
+        <ChartContainer>{chartInfo}</ChartContainer>
+      </ChartHeader>
+      <AboutSection>
+        <AboutHeader>{aboutHeader}</AboutHeader>
+        {aboutInfo}
+        <ResourcesContainer>{resources}</ResourcesContainer>
+      </AboutSection>
+      <StatsSection>{stats}</StatsSection>
+      <ContractAddressSection>{contract}</ContractAddressSection>
+      {tokenSafety}
+    </TopArea>
+  )
+}
+
+export function LoadedTokenDetail({ address }: { address: string }) {
   const theme = useTheme()
   const token = useToken(address)
   const currency = useCurrency(address)
@@ -249,12 +289,14 @@ export default function LoadedTokenDetail({ address }: { address: string }) {
   // catch token error and loading state
   if (!token || !token.name || !token.symbol) {
     return (
-      <TopArea>
-        <BreadcrumbNavLink to="/explore">
-          <ArrowLeft size={14} /> Explore
-        </BreadcrumbNavLink>
-        <ChartHeader>
-          <TokenInfoContainer>
+      <TokenDetail
+        breadcrumb={
+          <>
+            <ArrowLeft size={14} /> Explore
+          </>
+        }
+        tokenInfo={
+          <>
             <TokenNameCell>
               <CurrencyLogo currency={currency} size={'32px'} />
               {!token ? 'No token name available' : token.name} <TokenSymbol>{token && token.symbol}</TokenSymbol>
@@ -266,8 +308,10 @@ export default function LoadedTokenDetail({ address }: { address: string }) {
               )}
             </TokenNameCell>
             <TokenActions></TokenActions>
-          </TokenInfoContainer>
-          <ChartContainer>
+          </>
+        }
+        chartInfo={
+          <>
             <ChartEmpty>
               <svg width="416" height="160" xmlns="http://www.w3.org/2000/svg">
                 <path d="M 0 80 Q 104 10, 208 80 T 416 80" stroke="#99A1BD" fill="transparent" strokeWidth="2" />
@@ -276,27 +320,22 @@ export default function LoadedTokenDetail({ address }: { address: string }) {
                 <path d="M 0 80 Q 104 10, 208 80 T 416 80" stroke="#99A1BD" fill="transparent" strokeWidth="2" />
               </svg>
             </ChartEmpty>
-          </ChartContainer>
-          <MissingChartData>
-            <TrendingUp size={12} />
-            Missing chart data
-          </MissingChartData>
-        </ChartHeader>
-
-        <AboutSection>
-          <AboutHeader>
-            <Trans>About</Trans>
-          </AboutHeader>
-          <NoInfoAvailable>No token information available</NoInfoAvailable>
-          <ResourcesContainer>
+            <MissingChartData>
+              <TrendingUp size={12} />
+              Missing chart data
+            </MissingChartData>
+          </>
+        }
+        aboutHeader={<Trans>About</Trans>}
+        aboutInfo={<NoInfoAvailable>No token information available</NoInfoAvailable>}
+        resources={
+          <>
             <Resource name={'Etherscan'} link={'https://etherscan.io/'} />
             <Resource name={'Protocol Info'} link={`https://info.uniswap.org/#/tokens/${address}`} />
-          </ResourcesContainer>
-        </AboutSection>
-        <StatsSection>
-          <NoInfoAvailable>No stats available</NoInfoAvailable>
-        </StatsSection>
-        <ContractAddressSection>
+          </>
+        }
+        stats={<NoInfoAvailable>No stats available</NoInfoAvailable>}
+        contract={
           <Contract>
             Contract Address
             <ContractAddress onClick={() => navigator.clipboard.writeText(address)}>
@@ -305,14 +344,16 @@ export default function LoadedTokenDetail({ address }: { address: string }) {
               <Copy size={13} color={theme.textSecondary} />
             </ContractAddress>
           </Contract>
-        </ContractAddressSection>
-        <TokenSafetyModal
-          isOpen={warningModalOpen}
-          tokenAddress={address}
-          onCancel={() => navigate(-1)}
-          onContinue={handleDismissWarning}
-        />
-      </TopArea>
+        }
+        tokenSafety={
+          <TokenSafetyModal
+            isOpen={warningModalOpen}
+            tokenAddress={address}
+            onCancel={() => navigate(-1)}
+            onContinue={handleDismissWarning}
+          />
+        }
+      />
     )
   }
   const tokenName = tokenDetailsData.name
@@ -322,14 +363,15 @@ export default function LoadedTokenDetail({ address }: { address: string }) {
   const aboutToken = tokenDetailsData.description
   const tokenMarketCap = tokenDetailsData.marketCap
   const tokenVolume = tokenDetailsData.volume
-
   return (
-    <TopArea>
-      <BreadcrumbNavLink to="/explore">
-        <ArrowLeft size={14} /> Explore
-      </BreadcrumbNavLink>
-      <ChartHeader>
-        <TokenInfoContainer>
+    <TokenDetail
+      breadcrumb={
+        <>
+          <ArrowLeft size={14} /> Explore
+        </>
+      }
+      tokenInfo={
+        <>
           <TokenNameCell>
             <CurrencyLogo currency={currency} size={'32px'} />
             {tokenName} <TokenSymbol>{tokenSymbol}</TokenSymbol>
@@ -350,46 +392,44 @@ export default function LoadedTokenDetail({ address }: { address: string }) {
               />
             </ClickFavorited>
           </TokenActions>
-        </TokenInfoContainer>
-        <ChartContainer>
-          <ParentSize>{({ width, height }) => <PriceChart width={width} height={height} />}</ParentSize>
-        </ChartContainer>
-      </ChartHeader>
-      <AboutSection>
-        <AboutHeader>
-          <Trans>About</Trans>
-        </AboutHeader>
-        {aboutToken}
-        <ResourcesContainer>
+        </>
+      }
+      chartInfo={<ParentSize>{({ width, height }) => <PriceChart width={width} height={height} />}</ParentSize>}
+      aboutHeader={<Trans>About</Trans>}
+      aboutInfo={aboutToken}
+      resources={
+        <>
           <Resource name={'Etherscan'} link={`https://etherscan.io/${address}`} />
           <Resource name={'Protocol Info'} link={`https://info.uniswap.org/#/tokens/${address}`} />
           <Resource name={'Website'} link={tokenDetailsData.homepageUrl} />
           <Resource name={'Twitter'} link={`https://twitter.com/${tokenDetailsData.twitterName}`} />
-        </ResourcesContainer>
-      </AboutSection>
-      <StatsSection>
-        <StatPair>
-          <Stat>
-            Market cap<StatPrice>${tokenMarketCap}</StatPrice>
-          </Stat>
-          <Stat>
-            {/* TODO: connect to chart's selected time */}
-            24h volume
-            <StatPrice>${tokenVolume}</StatPrice>
-          </Stat>
-        </StatPair>
-        <StatPair>
-          <Stat>
-            52W low
-            <StatPrice>${tokenDetailsData.priceLow52W}</StatPrice>
-          </Stat>
-          <Stat>
-            52W high
-            <StatPrice>${tokenDetailsData.priceHigh52W}</StatPrice>
-          </Stat>
-        </StatPair>
-      </StatsSection>
-      <ContractAddressSection>
+        </>
+      }
+      stats={
+        <>
+          <StatPair>
+            <Stat>
+              Market cap<StatPrice>${tokenMarketCap}</StatPrice>
+            </Stat>
+            <Stat>
+              {/* TODO: connect to chart's selected time */}
+              24h volume
+              <StatPrice>${tokenVolume}</StatPrice>
+            </Stat>
+          </StatPair>
+          <StatPair>
+            <Stat>
+              52W low
+              <StatPrice>${tokenDetailsData.priceLow52W}</StatPrice>
+            </Stat>
+            <Stat>
+              52W high
+              <StatPrice>${tokenDetailsData.priceHigh52W}</StatPrice>
+            </Stat>
+          </StatPair>
+        </>
+      }
+      contract={
         <Contract>
           Contract Address
           <ContractAddress onClick={() => navigator.clipboard.writeText(address)}>
@@ -398,13 +438,15 @@ export default function LoadedTokenDetail({ address }: { address: string }) {
             <Copy size={13} color={theme.textSecondary} />
           </ContractAddress>
         </Contract>
-      </ContractAddressSection>
-      <TokenSafetyModal
-        isOpen={warningModalOpen}
-        tokenAddress={address}
-        onCancel={() => navigate(-1)}
-        onContinue={handleDismissWarning}
-      />
-    </TopArea>
+      }
+      tokenSafety={
+        <TokenSafetyModal
+          isOpen={warningModalOpen}
+          tokenAddress={address}
+          onCancel={() => navigate(-1)}
+          onContinue={handleDismissWarning}
+        />
+      }
+    />
   )
 }

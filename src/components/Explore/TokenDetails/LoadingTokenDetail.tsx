@@ -2,21 +2,7 @@ import styled from 'styled-components/macro'
 
 import { ChartWrapper, DeltaContainer, TokenPrice } from '../../Charts/PriceChart'
 import { LoadingBubble } from '../loading'
-import {
-  AboutHeader,
-  AboutSection,
-  BreadcrumbNavLink,
-  ChartContainer,
-  ChartHeader,
-  ContractAddressSection,
-  ResourcesContainer,
-  Stat,
-  StatPair,
-  StatsSection,
-  TokenInfoContainer,
-  TokenNameCell,
-  TopArea,
-} from './TokenDetail'
+import TokenDetail, { ChartHeader, Stat, StatPair } from './TokenDetail'
 
 /* Loading state bubbles */
 const LoadingDetailBubble = styled(LoadingBubble)`
@@ -73,59 +59,53 @@ const Space = styled.div<{ heightSize: number }>`
 /* Loading State: row component with loading bubbles */
 export default function LoadingTokenDetail() {
   return (
-    <TopArea>
-      <BreadcrumbNavLink to="/explore">
-        <Space heightSize={20} />
-      </BreadcrumbNavLink>
-      <ChartHeader>
-        <TokenInfoContainer>
-          <TokenNameCell>
-            <IconLoadingBubble />
-            <TitleLoadingBubble />
-          </TokenNameCell>
-        </TokenInfoContainer>
-        <ChartContainer>
-          <ChartWrapper>
-            <ChartHeader>
-              <TokenPrice>
-                <PriceLoadingBubble />
-              </TokenPrice>
-              <DeltaContainer>
-                <Space heightSize={20} />
-              </DeltaContainer>
-            </ChartHeader>
-            <ChartAnimation>
-              <svg width="416" height="160" xmlns="http://www.w3.org/2000/svg">
-                <path d="M 0 80 Q 104 10, 208 80 T 416 80" stroke="#2e3138" fill="transparent" strokeWidth="2" />
-              </svg>
-              <svg width="416" height="160" xmlns="http://www.w3.org/2000/svg">
-                <path d="M 0 80 Q 104 10, 208 80 T 416 80" stroke="#2e3138" fill="transparent" strokeWidth="2" />
-              </svg>
-              <svg width="416" height="160" xmlns="http://www.w3.org/2000/svg">
-                <path d="M 0 80 Q 104 10, 208 80 T 416 80" stroke="#2e3138" fill="transparent" strokeWidth="2" />
-              </svg>
-              <svg width="416" height="160" xmlns="http://www.w3.org/2000/svg">
-                <path d="M 0 80 Q 104 10, 208 80 T 416 80" stroke="#2e3138" fill="transparent" strokeWidth="2" />
-              </svg>
-              <svg width="416" height="160" xmlns="http://www.w3.org/2000/svg">
-                <path d="M 0 80 Q 104 10, 208 80 T 416 80" stroke="#2e3138" fill="transparent" strokeWidth="2" />
-              </svg>
-            </ChartAnimation>
-          </ChartWrapper>
-        </ChartContainer>
-        <Space heightSize={32} />
-      </ChartHeader>
-      <AboutSection>
-        <AboutHeader>
-          <SquareLoadingBubble />
-        </AboutHeader>
-        <LongLoadingBubble />
-        <LongLoadingBubble />
-        <HalfLoadingBubble />
-
-        <ResourcesContainer>{null}</ResourcesContainer>
-      </AboutSection>
-      <StatsSection>
+    <TokenDetail
+      breadcrumb={<Space heightSize={20} />}
+      tokenName={
+        <>
+          <IconLoadingBubble />
+          <TitleLoadingBubble />
+        </>
+      }
+      chartInfo={
+        <ChartWrapper>
+          <ChartHeader>
+            <TokenPrice>
+              <PriceLoadingBubble />
+            </TokenPrice>
+            <DeltaContainer>
+              <Space heightSize={20} />
+            </DeltaContainer>
+          </ChartHeader>
+          <ChartAnimation>
+            <svg width="416" height="160" xmlns="http://www.w3.org/2000/svg">
+              <path d="M 0 80 Q 104 10, 208 80 T 416 80" stroke="#2e3138" fill="transparent" strokeWidth="2" />
+            </svg>
+            <svg width="416" height="160" xmlns="http://www.w3.org/2000/svg">
+              <path d="M 0 80 Q 104 10, 208 80 T 416 80" stroke="#2e3138" fill="transparent" strokeWidth="2" />
+            </svg>
+            <svg width="416" height="160" xmlns="http://www.w3.org/2000/svg">
+              <path d="M 0 80 Q 104 10, 208 80 T 416 80" stroke="#2e3138" fill="transparent" strokeWidth="2" />
+            </svg>
+            <svg width="416" height="160" xmlns="http://www.w3.org/2000/svg">
+              <path d="M 0 80 Q 104 10, 208 80 T 416 80" stroke="#2e3138" fill="transparent" strokeWidth="2" />
+            </svg>
+            <svg width="416" height="160" xmlns="http://www.w3.org/2000/svg">
+              <path d="M 0 80 Q 104 10, 208 80 T 416 80" stroke="#2e3138" fill="transparent" strokeWidth="2" />
+            </svg>
+          </ChartAnimation>
+        </ChartWrapper>
+      }
+      aboutHeader={<SquareLoadingBubble />}
+      aboutInfo={
+        <>
+          <LongLoadingBubble />
+          <LongLoadingBubble />
+          <HalfLoadingBubble />
+        </>
+      }
+      resources={null}
+      stats={
         <StatsLoadingContainer>
           <StatPair>
             <Stat>
@@ -148,8 +128,9 @@ export default function LoadingTokenDetail() {
             </Stat>
           </StatPair>
         </StatsLoadingContainer>
-      </StatsSection>
-      <ContractAddressSection>{null}</ContractAddressSection>
-    </TopArea>
+      }
+      contract={null}
+      tokenSafety={null}
+    />
   )
 }
