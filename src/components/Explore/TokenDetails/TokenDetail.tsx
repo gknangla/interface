@@ -14,7 +14,7 @@ import { darken } from 'polished'
 import { ReactElement, useCallback } from 'react'
 import { useState } from 'react'
 import { ArrowLeft, Copy, Heart, TrendingUp } from 'react-feather'
-import { useLazyLoadQuery } from 'react-relay'
+import { usePreloadedQuery } from 'react-relay'
 import { Link, useNavigate } from 'react-router-dom'
 import { CHAIN_SUBGRAPH_URL } from 'state/data/slice'
 import styled, { useTheme } from 'styled-components/macro'
@@ -279,7 +279,7 @@ export function LoadedTokenDetail({ address }: { address: string }) {
   const networkLabel = chainInfo?.label
   const networkBadgebackgroundColor = chainInfo?.backgroundColor
   const truncatedTokenAddress = `${address.slice(0, 4)}...${address.slice(-3)}`
-  const tokenDetailsData = useLazyLoadQuery(tokenDetailsStatsQuery, {
+  const tokenDetailsData = usePreloadedQuery(tokenDetailsStatsQuery, {
     contract: {
       address,
       chain: token ? CHAIN_SUBGRAPH_URL[token.chainId] : CHAIN_SUBGRAPH_URL[SupportedChainId.MAINNET],
